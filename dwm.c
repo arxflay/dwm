@@ -238,6 +238,7 @@ static int xerrorstart(Display *dpy, XErrorEvent *ee);
 static void zoom(const Arg *arg);
 
 /* variables */
+static Clr *selIndicatorColor;
 static const char autostartblocksh[] = "autostart_blocking.sh";
 static const char autostartsh[] = "autostart.sh";
 static const char broken[] = "broken";
@@ -498,6 +499,7 @@ cleanup(void)
 	XSync(dpy, False);
 	XSetInputFocus(dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
 	XDeleteProperty(dpy, root, netatom[NetActiveWindow]);
+	free(selIndicatorColor);
 }
 
 void
@@ -726,9 +728,21 @@ drawbar(Monitor *m)
 		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
 		drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
 		if (occ & 1 << i)
-			drw_rect(drw, x + boxs, boxs, boxw, boxw,
-				m == selmon && selmon->sel && selmon->sel->tags & 1 << i,
-				urg & 1 << i);
+		{
+			//selmon->sel->tags & 1 << i
+			if (selmon && selmon->sel && selmon->sel->tags & 1 << i && m == selmon)
+			{
+				drw_setscheme(drw, selIndicatorColor);
+				drw_rect(drw, x, 0, w, 2,
+						1, urg & 1 << i);
+			}
+			else
+			{
+				drw_rect(drw, x + 4, bh - 1, w - 7, 1,
+						0, urg & 1 << i);
+			}
+		}
+
 		x += w;
 	}
 	w = blw = TEXTW(m->ltsymbol);
@@ -737,7 +751,8 @@ drawbar(Monitor *m)
 
 	if ((w = m->ww - tw - x) > bh) {
 		if (m->sel) {
-			drw_setscheme(drw, scheme[m == selmon ? SchemeSel : SchemeNorm]);
+			//drw_setscheme(drw, scheme[m == selmon ? SchemeSel : SchemeNorm]);
+			drw_setscheme(drw, scheme[SchemeNorm]);
 			drw_text(drw, x, 0, w, bh, lrpad / 2, m->sel->name, 0);
 			if (m->sel->isfloating)
 				drw_rect(drw, x + boxs, boxs, boxw, boxw, m->sel->isfixed, 0);
@@ -1619,7 +1634,8 @@ setup(void)
 
 	/* clean up any zombies immediately */
 	sigchld(0);
-
+	selIndicatorColor = (Clr *)calloc(0, sizeof(Clr));
+	selIndicatorColor->pixel = col_selIndicator;
 	/* init screen */
 	screen = DefaultScreen(dpy);
 	sw = DisplayWidth(dpy, screen);
@@ -1629,7 +1645,7 @@ setup(void)
 	if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
 		die("no fonts could be loaded.");
 	lrpad = drw->fonts->h;
-	bh = drw->fonts->h + 2;
+	bh = user_bh ? user_bh : drw->fonts->h + 2;
 	updategeom();
 	/* init atoms */
 	utf8string = XInternAtom(dpy, "UTF8_STRING", False);

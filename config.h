@@ -5,17 +5,19 @@ static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "Iosevka:size=13"};
+static const int user_bh            = 33;
+static const char *fonts[]          = {"Iosevka:size=13", "noto-color-emoji:size=13"};
 static const char dmenufont[]       = "Iosevka:size=13";
 static const char col_gray1[]       = "#2C2F3A";
+static long col_selIndicator	    = 0xcc241d;
 static const char col_gray2[]       = "#444444";
-static const char col_gray3[]       = "#bbbbbb";
-static const char col_gray4[]       = "#eeeeee";
-static const char col_cyan[]        = "#1E1E1E";
+static const char col_gray3[]       = "#dddddd";
+static const char col_gray4[]       = "#e5d39b"; //"#eddfb4";
+static const char col_darkgray[]        = "#2a2d38";
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
-	[SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
+	[SchemeSel]  = { col_gray4, col_gray1,  col_darkgray},
 };
 /*commands*/
 static const char *upvol[] = { "amixer", "set", "Master", "2%+", NULL };
@@ -25,7 +27,7 @@ static const char *upblight[] = {"brightnessctl", "-d", "intel_backlight", "set"
 static const char *downblight[] = {"brightnessctl", "-d", "intel_backlight" , "set", "20-%", NULL};
 
 /* tagging */
-static const char *tags[] = { "1", "2", "3", "4"};
+static const char *tags[] = { "❶", "❷", "❸", "❹"};
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -44,11 +46,10 @@ static const int resizehints = 1;    /* 1 means respect size hints in tiled resi
 
 static const Layout layouts[] = {
 	/* symbol     arrange function */
-	{ "[T]",      tile },    /* first entry is default */
-	{ "[F]",      NULL },    /* no layout function means floating behavior */
-	{ "[M]",      monocle },
+	{ "| 🆃 |",      tile },    /* first entry is default */
+	{ "| 🅵 |",      NULL },    /* no layout function means floating behavior */
+	{ "| 🅼 |",      monocle },
 };
-
 /* key definitions */
 #define MODKEY Mod1Mask
 #define TAGKEYS(KEY,TAG) \
@@ -62,7 +63,7 @@ static const Layout layouts[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
+static const char *dmenucmd[] = { "morc_menu" };
 static const char *termcmd[]  = { "tilix", NULL };
 
 static Key keys[] = {
@@ -96,6 +97,7 @@ static Key keys[] = {
         { 0,                            XF86XK_AudioMute,                       spawn,          {.v=mute}},
         { 0,                            XF86XK_MonBrightnessUp,                 spawn,          {.v=upblight}},
         { 0,                            XF86XK_MonBrightnessDown,                       spawn,          {.v=downblight}},
+	{ MODKEY,                       XK_5, spawn,         SHCMD("pavucontrol")},
 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
