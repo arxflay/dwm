@@ -2,13 +2,14 @@ dwm - dynamic window manager
 ============================
 dwm is an extremely fast, small, and dynamic window manager for X.
 
-Applyied patches:
+Applied patches:
 ============================
 * Autostart: https://github.com/axelGschaider/dwm-patch-autostart.sh/
 * Changed sel tag indicator: me, but i took inspiration from https://dwm.suckless.org/patches/activetagindicatorbar/ 
 * bar height: https://dwm.suckless.org/patches/bar_height/  
 * enabled color emoji (you have to patch libxft with BGRA glyphs patch)
 * custom keybinds
+
 Requirements
 ------------
 In order to build dwm you need the Xlib header files.

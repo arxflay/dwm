@@ -8,21 +8,22 @@ static const int topbar             = 1;        /* 0 means bottom bar */
 static const int user_bh            = 33;
 static const char *fonts[]          = {"Iosevka:size=13", "noto-color-emoji:size=13"};
 static const char dmenufont[]       = "Iosevka:size=13";
-static const char col_gray1[]       = "#2C2F3A";
-static long col_selIndicator	    = 0xcc241d;
-static const char col_gray2[]       = "#444444";
-static const char col_gray3[]       = "#dddddd";
-static const char col_gray4[]       = "#e5d39b"; //"#eddfb4";
-static const char col_darkgray[]        = "#2a2d38";
+static const char col_barbg[]       = "#2C2F3A";
+static const long col_selIndicator = 0xCC241D;
+static const char col_normborder[]       = "#444444";
+static const char col_norm[]       = "#dddddd";
+static const char col_sel[]       = "#e5d39b"; //color of selected elements like tags or text
+static const char col_selborder[]        = "#2a2d38";
+static const char col_seldmenu[] = "#1E1E1E";
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
-	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
-	[SchemeSel]  = { col_gray4, col_gray1,  col_darkgray},
+	[SchemeNorm] = { col_norm, col_barbg, col_normborder},
+	[SchemeSel]  = { col_sel, col_barbg,  col_selborder},
 };
 /*commands*/
-static const char *upvol[] = { "amixer", "set", "Master", "2%+", NULL };
-static const char *downvol[] = { "amixer", "set", "Master", "2%-", NULL };
-static const char *mute[] = { "amixer", "-q", "set", "Master", "toggle", NULL};
+static const char *upvol[] = { "amixer", "-D", "pulse", "sset", "Master", "2%+", NULL };
+static const char *downvol[] = { "amixer", "-D", "pulse", "sset", "Master", "2%-", NULL };
+static const char *mute[] = { "amixer", "-q", "-D", "pulse", "sset", "Master", "toggle", NULL};
 static const char *upblight[] = {"brightnessctl", "-d", "intel_backlight", "set", "+20%", NULL};
 static const char *downblight[] = {"brightnessctl", "-d", "intel_backlight" , "set", "20-%", NULL};
 
@@ -35,7 +36,8 @@ static const Rule rules[] = {
 	 *	WM_NAME(STRING) = title
 	 */
 	/* class      instance    title       tags mask     isfloating   monitor */
-	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
+	{ "Gimp",     NULL,       NULL,       0,            0,           -1 },
+	{ "Steam",     NULL,       NULL,       0,            1,           -1 },
 	{ "Firefox",  NULL,       NULL,       0,	    0,           -1 },
 };
 
@@ -63,8 +65,11 @@ static const Layout layouts[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = { "morc_menu" };
+static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_barbg, "-nf", col_norm, "-sb", col_seldmenu , "-sf", col_sel, NULL};
 static const char *termcmd[]  = { "tilix", NULL };
+static const char *kblayoutswitcher[] = { "/usr/share/dwm_modules/switch_klayout.sh", NULL };
+static const char *screenshotapp[] = { "spectacle", NULL};
+static const char *audiocontrol[] = { "pavucontrol", NULL};
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
@@ -90,14 +95,14 @@ static Key keys[] = {
 	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
-        { MODKEY,                       XK_Shift_L, spawn,         SHCMD("/home/arxflay/switch_klayout.sh")},
-        { 0,                            XK_Print,   spawn,         SHCMD("mate-screenshot")},
+        { MODKEY,                       XK_Shift_L, spawn,         {.v = kblayoutswitcher}},
+        { 0,                            XK_Print,   spawn,         {.v = screenshotapp}},
         { 0,                            XF86XK_AudioRaiseVolume,                spawn,          {.v=upvol}},
         { 0,                            XF86XK_AudioLowerVolume,                spawn,          {.v=downvol}},
         { 0,                            XF86XK_AudioMute,                       spawn,          {.v=mute}},
         { 0,                            XF86XK_MonBrightnessUp,                 spawn,          {.v=upblight}},
         { 0,                            XF86XK_MonBrightnessDown,                       spawn,          {.v=downblight}},
-	{ MODKEY,                       XK_5, spawn,         SHCMD("pavucontrol")},
+	{ MODKEY,                       XK_5, spawn,         {.v = audiocontrol}},
 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
