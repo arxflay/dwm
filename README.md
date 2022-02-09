@@ -1,22 +1,22 @@
-dwm - dynamic window manager
-============================
-dwm is an extremely fast, small, and dynamic window manager for X.
+### I'm not creator of dwm, i just modified config, changed sel tag indicator and applied some patches from suckless page
 
-Applied patches:
-============================
+# dwm - dynamic window manager
+dwm is an extremely fast, small, and dynamic window manager for X.
+## Applied patches from suckless page:
 * Autostart: https://github.com/axelGschaider/dwm-patch-autostart.sh/
-* Changed sel tag indicator: me, but i took inspiration from https://dwm.suckless.org/patches/activetagindicatorbar/ 
 * bar height: https://dwm.suckless.org/patches/bar_height/  
 * enabled color emoji (you have to patch libxft with BGRA glyphs patch)
-* custom keybinds
 
-Requirements
-------------
+Changes in config:
+custom keybinds
+beautiful visuals
+
+
+## Requirements
 In order to build dwm you need the Xlib header files.
 
 
-Installation
-------------
+## Installation
 Edit config.mk to match your local setup (dwm is installed into
 the /usr/local namespace by default).
 
@@ -26,8 +26,7 @@ necessary as root):
     make clean install
 
 
-Running dwm
------------
+##  Running dwm
 Add the following line to your .xinitrc to start dwm using startx:
 
     exec dwm
